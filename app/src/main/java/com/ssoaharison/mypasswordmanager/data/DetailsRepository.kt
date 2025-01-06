@@ -16,9 +16,9 @@ interface DetailsRepository {
 
     suspend fun searchCredentialsByQuery(query: String): List<ExternalCredential>
 
-    suspend fun createCredential(username: String, password: String): String
+    suspend fun createCredential(appName: String, link: String, username: String, password: String): String
 
-    suspend fun updateCredential(credentialId: String, username: String, password: String, viewCount: Int)
+    suspend fun updateCredential(credentialId: String, appName: String, link: String, username: String, password: String, viewCount: Int)
 
     suspend fun updateCredentialViewCount(credentialId: String, viewCount: Int)
 

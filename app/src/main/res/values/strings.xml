@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">My password manager</string>
+    <string name="app_icon">App icon</string>
+    <string name="search">Search</string>
+    <string name="details">Details</string>
+    <string name="address">Address</string>
+    <string name="birthday">Birthday</string>
+    <string name="credentials">Credentials</string>
+    <string name="details_content">Details content</string>
+    <string name="menu_to_settings">To settings</string>
+    <string name="add_new_detail">Add new detail</string>
+    <string name="new_detail">New detail</string>
+    <string name="save">Save</string>
+    <string name="filter">Filter</string>
+    <string name="detail_content">%1$s content</string>
+    <string name="hint_app_or_website_name">App or website name</string>
+    <string name="hint_website_link">Website link</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+    <string name="on_no_detail_found">Navigate through your details by prompts.</string>
 </resources>

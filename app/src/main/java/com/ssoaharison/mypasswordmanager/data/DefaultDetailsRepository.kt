@@ -52,10 +52,17 @@ class DefaultDetailsRepository @Inject constructor(
         }
     }
 
-    override suspend fun createCredential(username: String, password: String): String {
+    override suspend fun createCredential(
+        appName: String,
+        link: String,
+        username: String,
+        password: String
+    ): String {
         val credentialId = now()
         val credential = ExternalCredential(
             id = credentialId,
+            appName = appName,
+            link = link,
             username = username,
             password = password,
             viewCount = 0
@@ -66,11 +73,15 @@ class DefaultDetailsRepository @Inject constructor(
 
     override suspend fun updateCredential(
         credentialId: String,
+        appName: String,
+        link: String,
         username: String,
         password: String,
         viewCount: Int
     ) {
         val credential = getCredential(credentialId)?.copy(
+            appName = appName,
+            link = link,
             username = username,
             password = password,
             viewCount = viewCount
