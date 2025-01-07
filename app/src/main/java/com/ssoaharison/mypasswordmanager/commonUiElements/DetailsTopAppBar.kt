@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +71,8 @@ fun DetailUpsertTopAppBar(
 @Composable
 fun GenericTopAppBar(
     title: String,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
     onBack: () -> Unit,
 ) {
     TopAppBar(
@@ -76,6 +80,14 @@ fun GenericTopAppBar(
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(painter = painterResource(R.drawable.ic_arrow_back), contentDescription =  stringResource(R.string.app_icon))
+            }
+        },
+        actions = {
+            IconButton(onClick = onEdit) {
+                Icon(imageVector = Icons.Default.Edit, contentDescription = stringResource(R.string.menu_edit))
+            }
+            IconButton(onClick = onDelete) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = stringResource(R.string.menu_delete))
             }
         },
         modifier = Modifier.fillMaxWidth()
@@ -107,7 +119,7 @@ private fun DetailUpsertTopAppBarPreview() {
 private fun GenericTopAppBarTopAppBarPreview() {
     MyPasswordManagerTheme {
         Surface {
-            GenericTopAppBar(stringResource(R.string.detail_content, "Credential")) {}
+            GenericTopAppBar(stringResource(R.string.detail_content, "Credential"), {}, {}) {}
         }
     }
 }

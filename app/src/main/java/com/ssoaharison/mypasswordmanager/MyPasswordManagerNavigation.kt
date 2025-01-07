@@ -77,3 +77,5 @@ class MyPasswordManagerNavigationActions (private val navController: NavHostCont
     }
 
 }
+
+val mainScreens = listOf(SEARCH_SCREEN, DETAILS_SCREEN)

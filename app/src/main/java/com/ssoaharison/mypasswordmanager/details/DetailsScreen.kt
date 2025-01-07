@@ -24,11 +24,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssoaharison.mypasswordmanager.R
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsList
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsTopAppBar
@@ -40,14 +45,13 @@ import com.ssoaharison.mypasswordmanager.util.generateDetailFilterExample
 @Composable
 fun DetailsScreen(
     @StringRes userMessage: Int,
-    detailsList: List<ExternalCredential>,
     onDetailClicked: (ExternalCredential) -> Unit,
     onAddNewDetail: () -> Unit,
     onToSettings: () -> Unit,
     onRefresh: () -> Unit,
-    onFilterChange: (DetailFilterModel) -> Unit,
     onUserMessageDisplayed: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: DetailsViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     Scaffold (
@@ -66,20 +70,40 @@ fun DetailsScreen(
             }
         }
     ) { paddingValues ->
+
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
         Column(
             modifier = Modifier.padding(paddingValues)
         ) {
             FilterChipItems(
                 R.string.filter,
-                generateDetailFilterExample(),
-                onFilterChange
+                uiState.filteringUiInfo,
+                { viewModel.setFiltering(it.type) }
             )
             DetailsList(
                 title = stringResource(R.string.credentials,),
-                details = detailsList,
+                details = uiState.items,
                 onDetailClicked = onDetailClicked,
             )
         }
+
+        uiState.userMessage?.let { userMessage ->
+            val snackbarText = stringResource(userMessage)
+            LaunchedEffect(snackbarHostState, viewModel, userMessage, snackbarText) {
+                snackbarHostState.showSnackbar(snackbarText)
+                viewModel.snackbarMessageShown()
+            }
+        }
+
+        val currentOnUserMessageDisplayed by rememberUpdatedState(onUserMessageDisplayed)
+        LaunchedEffect(userMessage) {
+            if ( userMessage != 0) {
+                viewModel.showUpsertResultMessage(userMessage)
+                currentOnUserMessageDisplayed()
+            }
+        }
+
     }
 }
 
@@ -90,9 +114,10 @@ fun FilterChipItems(
     onFilterClicked: (DetailFilterModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier
-        .fillMaxWidth()
-        .padding(all = dimensionResource(R.dimen.horizontal_margin))
+    Column(
+        modifier
+            .fillMaxWidth()
+            .padding(all = dimensionResource(R.dimen.horizontal_margin))
     ) {
         Text(stringResource(text))
         LazyRow (
@@ -135,50 +160,6 @@ fun FilterChipItem(
             null
         },
     )
-}
-
-@Preview
-@Composable
-fun DetailsScreenPreview() {
-    MyPasswordManagerTheme {
-        Surface {
-            DetailsScreen(
-                userMessage = 0,
-                detailsList = listOf(
-                    ExternalCredential(
-                        "111",
-                        "Youtube",
-                        "aaa",
-                        "Banne",
-                        "123456",
-                        0
-                    ),
-                    ExternalCredential(
-                        "111",
-                        "Insta",
-                        "aaa",
-                        "Banne",
-                        "123456",
-                        0
-                    ),
-                    ExternalCredential(
-                        "111",
-                        "Facebook",
-                        "aaa",
-                        "Banne",
-                        "123456",
-                        0
-                    )
-                ),
-                onDetailClicked = {},
-                onAddNewDetail = {},
-                onToSettings = {},
-                onRefresh = {},
-                onFilterChange = {},
-                onUserMessageDisplayed = {}
-            )
-        }
-    }
 }
 
 @Preview

@@ -8,8 +8,11 @@
     <string name="credentials">Credentials</string>
     <string name="details_content">Details content</string>
     <string name="menu_to_settings">To settings</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_delete">Delete</string>
     <string name="add_new_detail">Add new detail</string>
     <string name="new_detail">New detail</string>
+    <string name="edit_detail">Edit detail</string>
     <string name="save">Save</string>
     <string name="filter">Filter</string>
     <string name="detail_content">%1$s content</string>
@@ -18,4 +21,11 @@
     <string name="hint_username">Username</string>
     <string name="hint_password">Password</string>
     <string name="on_no_detail_found">Navigate through your details by prompts.</string>
+    <string name="error_missing_detail_content">Required detail content missing.</string>
+    <string name="error_detail_not_found">Detail not found.</string>
+    <string name="error_loading_detail">Error while loading detail.</string>
+    <string name="error_no_detail">No detail found.</string>
+    <string name="message_detail_saved_successfully">Detail saved.</string>
+    <string name="message_detail_added_successfully">Detail added.</string>
+    <string name="message_detail_deleted_successfully">Detail deleted.</string>
 </resources>

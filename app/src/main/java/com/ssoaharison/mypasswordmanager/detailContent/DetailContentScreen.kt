@@ -13,11 +13,15 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssoaharison.mypasswordmanager.R
 import com.ssoaharison.mypasswordmanager.commonUiElements.GenericTopAppBar
 import com.ssoaharison.mypasswordmanager.data.ExternalCredential
@@ -26,28 +30,54 @@ import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
 @Composable
 fun DetailContentScreen(
     topBarTitle: String,
-    detail: ExternalCredential,
+    onEditDetail: (String) -> Unit,
+    onDeleteDetail: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: DetailContentViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
+
     Scaffold (
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            GenericTopAppBar(topBarTitle, onBack)
+            GenericTopAppBar(
+                title = topBarTitle,
+                onBack = onBack,
+                onEdit = { onEditDetail(viewModel.detailId) },
+                onDelete = viewModel::deleteDetail
+                )
         }
     ) { paddingValues ->
+
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
         DetailContent(
-            detail = detail,
+            detail = uiState.detail,
             Modifier.padding(paddingValues)
         )
+
+        uiState.userMessage?.let { userMessage ->
+            val snackbarText = stringResource(userMessage)
+            LaunchedEffect(snackbarHostState, viewModel, userMessage, snackbarText) {
+                snackbarHostState.showSnackbar(snackbarText)
+                viewModel.snackbarMessageShown()
+            }
+        }
+
+        LaunchedEffect(uiState.isDetailDeleted) {
+            if (uiState.isDetailDeleted) {
+                onDeleteDetail()
+            }
+        }
+
     }
 }
 
 @Composable
 fun DetailContent(
-    detail: ExternalCredential,
+    detail: ExternalCredential?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -56,42 +86,30 @@ fun DetailContent(
             .padding(all = dimensionResource(R.dimen.horizontal_margin))
             .verticalScroll(rememberScrollState())
     ) {
-        Text(
-            text = detail.appName,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = dimensionResource(R.dimen.item_padding))
+        detail?.let {
+            Text(
+                text = it.appName,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(R.dimen.item_padding))
             )
-        Text(
-            text = detail.link,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = dimensionResource(R.dimen.item_padding))
-        )
-        Text(
-            text = detail.username,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = dimensionResource(R.dimen.item_padding))
-        )
-        Text(
-            text = detail.password,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = dimensionResource(R.dimen.item_padding))
-        )
-    }
-}
-
-@Preview
-@Composable
-fun DetailContentScreenPreview() {
-    MyPasswordManagerTheme {
-        Surface {
-            DetailContentScreen(
-                stringResource(R.string.detail_content, "Credential"),
-                ExternalCredential("", "Youtube", "youtube.com", "Banne", "123456", 0),
-                {}
+            Text(
+                text = it.link,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(R.dimen.item_padding))
+            )
+            Text(
+                text = it.username,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(R.dimen.item_padding))
+            )
+            Text(
+                text = it.password,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = dimensionResource(R.dimen.item_padding))
             )
         }
     }

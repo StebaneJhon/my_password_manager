@@ -16,7 +16,6 @@ import androidx.navigation.navArgument
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.DETAIL_ID_ARG
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.TITLE_ARG
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.USER_MESSAGE_ARG
-import com.ssoaharison.mypasswordmanager.data.ExternalCredential
 import com.ssoaharison.mypasswordmanager.detailContent.DetailContentScreen
 import com.ssoaharison.mypasswordmanager.details.DetailsScreen
 import com.ssoaharison.mypasswordmanager.search.SearchScreen
@@ -53,10 +52,8 @@ fun MyPasswordManagerNavGraph(
                 onUserMessageDisplayed = {entry.arguments?.putInt(USER_MESSAGE_ARG, 0)},
                 onAddNewDetail = {navActions.navigateToUpsertDetail(R.string.add_new_detail, null)},
                 onDetailClicked = {detail -> navActions.navigateToDetailContent(detail.id)},
-                detailsList = listOf(), // TODO: To be changed
                 onToSettings = {}, // TODO: To be changed
                 onRefresh = {}, // TODO: To be changed
-                onFilterChange = {} // TODO: To be changed
             )
         }
         composable(
@@ -67,10 +64,7 @@ fun MyPasswordManagerNavGraph(
         ) { entry ->
             SearchScreen(
                 userMessage = entry.arguments?.getInt(USER_MESSAGE_ARG)!!,
-                onUserMessageDisplayed = {entry.arguments?.putInt(USER_MESSAGE_ARG, 0)},
-                detailsList = listOf(),
                 onDetailClicked = {detail -> navActions.navigateToDetailContent(detail.id)},
-                onSearchQueryChange = {},
                 onAddNewDetail = {navActions.navigateToUpsertDetail(R.string.add_new_detail, null)},
                 onRefresh = {},
                 onToSettings = {}
@@ -86,6 +80,11 @@ fun MyPasswordManagerNavGraph(
             val detailId = entry.arguments?.getString(DETAIL_ID_ARG)
             UpsertDetailScreen(
                 topBarTitle = entry.arguments?.getInt(TITLE_ARG)!!,
+                onDetailUpdate = {
+                    navActions.navigateToDetails(
+                        if (detailId == null) UPSERT_RESULT_OK else EDIT_RESULT_OK
+                    )
+                },
                 onBack = { navController.popBackStack() }
             )
         }
@@ -93,8 +92,11 @@ fun MyPasswordManagerNavGraph(
             MyPasswordManagerDestinations.DETAIL_CONTENT_ROUTE
         ) {
             DetailContentScreen(
-                "",
-                ExternalCredential("", "Youtube", "youtube.com", "Banne", "123456", 0), // TODO: To be changed
+                topBarTitle = "",
+                onEditDetail = {detailId ->
+                    navActions.navigateToUpsertDetail(R.string.edit_detail, detailId)
+                },
+                onDeleteDetail = { navActions.navigateToDetails(DELETE_RESULT_OK) },
                 onBack = {navController.popBackStack()}
             )
         }

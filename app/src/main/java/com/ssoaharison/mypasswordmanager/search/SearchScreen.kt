@@ -19,12 +19,17 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssoaharison.mypasswordmanager.R
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsList
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsTopAppBar
@@ -34,14 +39,13 @@ import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
 @Composable
 fun SearchScreen(
     @StringRes userMessage: Int,
-    detailsList: List<ExternalCredential>,
     onDetailClicked: (ExternalCredential) -> Unit,
-    onSearchQueryChange: (String) -> Unit,
     onAddNewDetail: () -> Unit,
     onRefresh: () -> Unit,
     onToSettings: () -> Unit,
-    onUserMessageDisplayed: () -> Unit,
+//    onUserMessageDisplayed: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: SearchViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     Scaffold(
@@ -60,26 +64,39 @@ fun SearchScreen(
             }
         }
     ) { paddingValues ->
-        val searchQuery = ""  // TODO: Implement listener
+
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
         Column (
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(paddingValues).fillMaxSize()
         ) {
             SearchBar(
-                onSearchQueryChange,
-                searchQuery,
+                viewModel::onSearchQueryChange,
+                uiState.searchQuery,
                 Modifier.padding(horizontal = dimensionResource(R.dimen.horizontal_margin))
             )
-            if (detailsList.isEmpty()) {
-                Text(text = stringResource(R.string.on_no_detail_found), style = MaterialTheme.typography.labelSmall)
-            } else {
+            if(uiState.userMessage != 0) {
                 DetailsList(
                     title = stringResource(R.string.credentials,),
-                    details = detailsList,
+                    details = uiState.items,
                     onDetailClicked = onDetailClicked,
                 )
+            } else {
+                uiState.userMessage?.let {
+                    Text(text = stringResource(it), style = MaterialTheme.typography.labelSmall)
+                }
             }
+
+            uiState.userMessage?.let { userMessage ->
+                val snackbarText = stringResource(userMessage)
+                LaunchedEffect(snackbarHostState, viewModel, userMessage, snackbarText) {
+                    snackbarHostState.showSnackbar(snackbarText)
+                    viewModel.snackbarMessageShown()
+                }
+            }
+
         }
     }
 }
@@ -99,25 +116,6 @@ fun SearchBar(
         modifier = modifier
             .fillMaxWidth()
     )
-}
-
-@Preview
-@Composable
-fun SearchScreenPreview() {
-    MyPasswordManagerTheme {
-        Surface {
-            SearchScreen(
-                0,
-                listOf(),
-                {},
-                {},
-                {},
-                {},
-                {},
-                {}
-            )
-        }
-    }
 }
 
 @Preview

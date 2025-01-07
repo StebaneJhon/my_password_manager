@@ -14,11 +14,15 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssoaharison.mypasswordmanager.R
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailUpsertTopAppBar
 import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
@@ -26,42 +30,48 @@ import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
 @Composable
 fun UpsertDetailScreen(
     @StringRes topBarTitle: Int,
+    onDetailUpdate: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: UpsertDetailViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     Scaffold (
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            DetailUpsertTopAppBar(topBarTitle, onBack) {
-                //TODO: Save detail
-            }
+            DetailUpsertTopAppBar(topBarTitle, onBack, viewModel::saveDetail)
         }
     ){ paddingValues ->
-        val appName = ""
-        val applink = ""
-        val userame = ""
-        val password = ""
+
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
         UpsertDetailContent(
-            appName,
-            applink,
-            userame,
-            password,
-            {
-                //TODO: Implementing app name change
-            },
-            {
-                //TODO: Implementing app link change
-            },
-            {
-                //TODO: Implementing user name change
-            },
-            {
-                //TODO: Implementing password change
-            },
-            Modifier.padding(paddingValues)
+            appName = uiState.appName,
+            link = uiState.link,
+            username = uiState.username,
+            password = uiState.password,
+            onAppNameChange = viewModel::updateAppName,
+            onLinkChange = viewModel::updateLink,
+            onUsernameChange = viewModel::updateUsername,
+            onPasswordChange = viewModel::updatePassword,
+            modifier = Modifier.padding(paddingValues)
         )
+
+        LaunchedEffect(uiState.isDetailSaved) {
+            if (uiState.isDetailSaved) {
+                onDetailUpdate()
+            }
+        }
+
+        uiState.userMessage?.let { userMessage ->
+            val snackbarText = stringResource(userMessage)
+            LaunchedEffect(snackbarHostState, viewModel, userMessage, snackbarText) {
+                snackbarHostState.showSnackbar(snackbarText)
+                viewModel.snackbarMessageShown()
+            }
+        }
+
     }
 }
 
@@ -119,19 +129,6 @@ fun UpsertDetailContent(
             placeholder = { Text(text = stringResource(R.string.hint_password)) },
             maxLines = 1,
         )
-    }
-}
-
-@Preview
-@Composable
-fun UpsertDetailScreenPreview() {
-    MyPasswordManagerTheme {
-        Surface {
-            UpsertDetailScreen(
-                topBarTitle = R.string.add_new_detail,
-                {},
-            )
-        }
     }
 }
 
