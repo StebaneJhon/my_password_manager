@@ -1,5 +1,6 @@
 package com.ssoaharison.mypasswordmanager.search
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,12 +33,14 @@ import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
 
 @Composable
 fun SearchScreen(
+    @StringRes userMessage: Int,
     detailsList: List<ExternalCredential>,
     onDetailClicked: (ExternalCredential) -> Unit,
     onSearchQueryChange: (String) -> Unit,
     onAddNewDetail: () -> Unit,
     onRefresh: () -> Unit,
-    onTiSettings: () -> Unit,
+    onToSettings: () -> Unit,
+    onUserMessageDisplayed: () -> Unit,
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
@@ -48,7 +51,7 @@ fun SearchScreen(
             DetailsTopAppBar(
                 R.string.search,
                 onRefresh,
-                onTiSettings
+                onToSettings
             )
         },
         floatingActionButton = {
@@ -104,12 +107,14 @@ fun SearchScreenPreview() {
     MyPasswordManagerTheme {
         Surface {
             SearchScreen(
+                0,
                 listOf(),
                 {},
                 {},
                 {},
                 {},
                 {},
+                {}
             )
         }
     }
