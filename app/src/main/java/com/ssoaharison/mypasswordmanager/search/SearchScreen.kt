@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -30,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ssoaharison.mypasswordmanager.MyPasswordManagerNavBarItem
 import com.ssoaharison.mypasswordmanager.R
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsList
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsTopAppBar
@@ -70,23 +73,22 @@ fun SearchScreen(
         Column (
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(paddingValues).fillMaxSize()
+            modifier = Modifier.padding(paddingValues)
+                .fillMaxSize()
         ) {
-            SearchBar(
+            MySearchBar(
                 viewModel::onSearchQueryChange,
                 uiState.searchQuery,
                 Modifier.padding(horizontal = dimensionResource(R.dimen.horizontal_margin))
             )
-            if(uiState.userMessage != 0) {
+            if(uiState.searchQuery.isNotBlank()) {
                 DetailsList(
                     title = stringResource(R.string.credentials,),
                     details = uiState.items,
                     onDetailClicked = onDetailClicked,
                 )
             } else {
-                uiState.userMessage?.let {
-                    Text(text = stringResource(it), style = MaterialTheme.typography.labelSmall)
-                }
+                Text(text = stringResource(uiState.userMessage ?: R.string.on_no_detail_found), style = MaterialTheme.typography.labelSmall)
             }
 
             uiState.userMessage?.let { userMessage ->
@@ -102,11 +104,12 @@ fun SearchScreen(
 }
 
 @Composable
-fun SearchBar(
+fun MySearchBar(
     onSearchQueryChange: (String) -> Unit,
     searchQuery: String,
     modifier: Modifier = Modifier
 ) {
+
     OutlinedTextField(
         value = searchQuery,
         leadingIcon = { Icon(imageVector = Icons.Default.Search, null) },
@@ -123,7 +126,7 @@ fun SearchBar(
 fun SearchBarPreview() {
     MyPasswordManagerTheme {
         Surface {
-            SearchBar({}, "")
+            MySearchBar({}, "")
         }
     }
 }

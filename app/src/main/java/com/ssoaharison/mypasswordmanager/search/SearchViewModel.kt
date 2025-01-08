@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class SearchUiState(
@@ -33,9 +34,7 @@ class SearchViewModel @Inject constructor(
     private val _searchQuery: MutableStateFlow<String> = MutableStateFlow("")
     private val _userMessage: MutableStateFlow<Int?> = MutableStateFlow(null)
     private val _isLoading = MutableStateFlow(false)
-    private val _foundDetailsAsync = detailsRepository.observeCredentialsByQuery(_searchQuery.value)
-        .map { Async.Success(it) }
-        .catch<Async<List<ExternalCredential>>> { emit(Async.Error(R.string.error_no_detail)) }
+    private val _foundDetailsAsync: MutableStateFlow<Async<List<ExternalCredential>>> = MutableStateFlow(Async.Loading)
 
     val uiState: StateFlow<SearchUiState> = combine(
         _searchQuery, _userMessage, _isLoading, _foundDetailsAsync
@@ -59,12 +58,16 @@ class SearchViewModel @Inject constructor(
     } .stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
-        initialValue = SearchUiState(isLoading = false)
+        initialValue = SearchUiState(isLoading = false, userMessage = R.string.on_no_detail_found)
     )
 
     fun onSearchQueryChange(newSearchQuery: String) {
-        _searchQuery.update {
-            newSearchQuery
+        _searchQuery.value = newSearchQuery
+        viewModelScope.launch {
+            detailsRepository.observeCredentialsByQuery("%$newSearchQuery%")
+                .map { Async.Success(it) }
+                .collect { _foundDetailsAsync.value = it }
+
         }
     }
 

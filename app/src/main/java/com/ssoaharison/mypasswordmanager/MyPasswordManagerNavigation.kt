@@ -1,5 +1,7 @@
 package com.ssoaharison.mypasswordmanager
 
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.TITLE_ARG
@@ -78,4 +80,13 @@ class MyPasswordManagerNavigationActions (private val navController: NavHostCont
 
 }
 
-val mainScreens = listOf(SEARCH_SCREEN, DETAILS_SCREEN)
+data class MyPasswordManagerNavBarItem(
+    val screen: String,
+    val onSelectedIcon: Int,
+    val onUnSelectedIcon: Int
+)
+
+val navBarItems = listOf(
+    MyPasswordManagerNavBarItem(SEARCH_SCREEN,  R.drawable.ic_search_bold, R.drawable.ic_search),
+    MyPasswordManagerNavBarItem(DETAILS_SCREEN, R.drawable.ic_dock_to_right_filled, R.drawable.ic_dock_to_right),
+)

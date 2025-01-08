@@ -92,10 +92,10 @@ class UpsertDetailViewModel @Inject constructor(
         viewModelScope.launch {
             detailsRepository.updateCredential(
                 detailId,
-                appName = uiState.value.appName,
-                link = uiState.value.link,
-                username = uiState.value.username,
-                password = uiState.value.password,
+                appName = uiState.value.appName.trim(),
+                link = uiState.value.link.trim(),
+                username = uiState.value.username.trim(),
+                password = uiState.value.password.trim(),
                 viewCount = uiState.value.viewCount
             )
             _uiState.update {
@@ -105,7 +105,12 @@ class UpsertDetailViewModel @Inject constructor(
     }
 
     private fun createNewDetail() = viewModelScope.launch {
-        detailsRepository.createCredential(uiState.value.appName, uiState.value.link, uiState.value.username, uiState.value.password)
+        detailsRepository.createCredential(
+            uiState.value.appName.trim(),
+            uiState.value.link.trim(),
+            uiState.value.username.trim(),
+            uiState.value.password.trim()
+        )
         _uiState.update {
             it.copy(isDetailSaved = true)
         }

@@ -35,7 +35,9 @@ class DefaultDetailsRepository @Inject constructor(
     }
 
     override suspend fun getCredential(credentialId: String): ExternalCredential? {
-        return dataSource.getCredentialById(credentialId)?.toExternal()
+        return withContext(dispatcher) {
+            dataSource.getCredentialById(credentialId)?.toExternal()
+        }
     }
 
     override fun observeCredentialsByQuery(query: String): Flow<List<ExternalCredential>> {

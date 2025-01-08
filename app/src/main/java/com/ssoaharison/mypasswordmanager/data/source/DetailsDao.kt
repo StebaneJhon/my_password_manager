@@ -14,7 +14,7 @@ interface DetailsDao {
     @Query("SELECT * FROM credential WHERE id = :credentialId")
     fun observeCredentialById(credentialId: String): Flow<LocalCredential>
 
-    @Query("SELECT * FROM credential WHERE id LIKE :query OR username LIKE :query OR password LIKE :query")
+    @Query("SELECT * FROM credential WHERE id LIKE :query OR username LIKE :query OR password LIKE :query OR appName LIKE :query OR link LIKE :query")
     fun observeCredentialsByQuery(query: String): Flow<List<LocalCredential>>
 
     @Query("SELECT * FROM credential WHERE id LIKE :query OR username LIKE :query OR password LIKE :query")

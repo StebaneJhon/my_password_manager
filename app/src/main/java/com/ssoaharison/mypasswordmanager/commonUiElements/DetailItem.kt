@@ -41,8 +41,7 @@ fun DetailsList(
             modifier = Modifier.padding(
                 horizontal = dimensionResource(id = R.dimen.item_padding),
                 vertical = dimensionResource(id = R.dimen.vertical_margin)
-            ),
-            style = MaterialTheme.typography.headlineSmall
+            )
         )
         LazyColumn {
             items(details) { detail ->
@@ -70,7 +69,6 @@ fun DetailItem(
             headlineContent = {
                 Text(text = credential.appName, style = MaterialTheme.typography.headlineSmall)
             },
-            leadingContent = {},
             trailingContent = {
                 IconButton(onClick = { onDetailClicked(credential) }) {
                     Icon(
