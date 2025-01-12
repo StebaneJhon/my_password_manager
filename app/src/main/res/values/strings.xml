@@ -28,4 +28,5 @@
     <string name="message_detail_saved_successfully">Detail saved.</string>
     <string name="message_detail_added_successfully">Detail added.</string>
     <string name="message_detail_deleted_successfully">Detail deleted.</string>
+    <string name="message_must_set_the_app_as_current_autofill_service">Set My password manager as the current autofill service for the app to fully function.</string>
 </resources>

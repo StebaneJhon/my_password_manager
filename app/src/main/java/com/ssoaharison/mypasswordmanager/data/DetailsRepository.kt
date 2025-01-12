@@ -12,6 +12,8 @@ interface DetailsRepository {
 
     suspend fun getCredential(credentialId: String): ExternalCredential?
 
+    suspend fun getCredentialByAppName(appName: String): ExternalCredential?
+
     fun observeCredentialsByQuery(query: String): Flow<List<ExternalCredential>>
 
     suspend fun searchCredentialsByQuery(query: String): List<ExternalCredential>

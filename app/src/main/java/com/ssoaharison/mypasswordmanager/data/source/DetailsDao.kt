@@ -26,6 +26,9 @@ interface DetailsDao {
     @Query("SELECT * FROM credential WHERE id = :credentialId")
     fun getCredentialById(credentialId: String): LocalCredential?
 
+    @Query("SELECT * FROM credential WHERE appName = :credentialAppName")
+    fun getCredentialByAppName(credentialAppName: String): LocalCredential?
+
     @Upsert
     suspend fun upsertCredential(credential: LocalCredential)
 
