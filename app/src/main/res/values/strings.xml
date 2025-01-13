@@ -36,4 +36,6 @@
     <string name="label_link">Link</string>
     <string name="copy">Copy %1$s</string>
     <string name="label_screen_in_development">This screen is still in development</string>
+    <string name="label_title_biometric">Please identify yourself</string>
+    <string name="label_description_biometric">Please identify yourself</string>
 </resources>
