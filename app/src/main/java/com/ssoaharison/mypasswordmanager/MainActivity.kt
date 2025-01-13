@@ -21,12 +21,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.ssoaharison.mypasswordmanager.MyPasswordManagerScreens.DETAILS_SCREEN
+import com.ssoaharison.mypasswordmanager.MyPasswordManagerScreens.SEARCH_SCREEN
+import com.ssoaharison.mypasswordmanager.MyPasswordManagerScreens.SETTINGS_SCREEN
 import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -66,7 +68,10 @@ fun MyPasswordManagerApp(context: Context) {
         val navActions: MyPasswordManagerNavigationActions = remember(navController) {
             MyPasswordManagerNavigationActions(navController)
         }
-        var selectedItem by remember { mutableIntStateOf(0) }
+
+        val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = currentNavBackStackEntry?.destination?.route ?: startDestination
+        val currentScreen = currentRoute.split("?").first()
 
         Surface(color = MaterialTheme.colorScheme.background) {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -79,13 +84,12 @@ fun MyPasswordManagerApp(context: Context) {
                 )
                 MyPasswordManagerNavBar(
                     screens = navBarItems,
-                    selectedItem = selectedItem
-                ) { index ->
-                    selectedItem = index
-                    when (selectedItem) {
-                        0 -> navActions.navigateToSearch()
-                        1 -> navActions.navigateToDetails()
-                        2 -> navActions.navigateToSettings()
+                    selectedItem = currentScreen
+                ) { currentScreen ->
+                    when (currentScreen) {
+                        SEARCH_SCREEN -> navActions.navigateToSearch()
+                        DETAILS_SCREEN -> navActions.navigateToDetails()
+                        SETTINGS_SCREEN -> navActions.navigateToSettings()
                     }
                 }
             }
@@ -97,21 +101,21 @@ fun MyPasswordManagerApp(context: Context) {
 fun MyPasswordManagerNavBar(
     modifier: Modifier = Modifier,
     screens: List<MyPasswordManagerNavBarItem>,
-    selectedItem: Int,
-    onItemSelected: (Int) -> Unit,
+    selectedItem: String,
+    onItemSelected: (String) -> Unit,
 ) {
     NavigationBar {
-        screens.forEachIndexed { index, screen ->
+        screens.forEach { screen ->
             NavigationBarItem(
                 icon = {
                     Icon(
-                        if (selectedItem == index) painterResource(screen.onSelectedIcon) else painterResource(screen.onUnSelectedIcon),
+                        if (selectedItem == screen.screen) painterResource(screen.onSelectedIcon) else painterResource(screen.onUnSelectedIcon),
                         contentDescription = null
                     )
                 },
                 label = { Text(screen.screen) },
-                selected = selectedItem == index,
-                onClick = { onItemSelected(index) }
+                selected = selectedItem == screen.screen,
+                onClick = { onItemSelected(screen.screen) }
             )
         }
     }

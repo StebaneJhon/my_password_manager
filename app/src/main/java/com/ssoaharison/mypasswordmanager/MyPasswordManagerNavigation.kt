@@ -2,7 +2,6 @@ package com.ssoaharison.mypasswordmanager
 
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinations.SETTINGS_ROUTE
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.TITLE_ARG
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.DETAIL_ID_ARG
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.USER_MESSAGE_ARG
@@ -12,7 +11,7 @@ import com.ssoaharison.mypasswordmanager.MyPasswordManagerScreens.SEARCH_SCREEN
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerScreens.SETTINGS_SCREEN
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerScreens.UPSERT_DETAIL_SCREEN
 
-private object MyPasswordManagerScreens {
+object MyPasswordManagerScreens {
     const val DETAIL_CONTENT_SCREEN = "detailContent"
     const val UPSERT_DETAIL_SCREEN = "upsertDetail"
     const val SEARCH_SCREEN = "search"
