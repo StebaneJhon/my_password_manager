@@ -9,13 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -24,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -32,10 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ssoaharison.mypasswordmanager.MyPasswordManagerNavBarItem
 import com.ssoaharison.mypasswordmanager.R
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsList
-import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsTopAppBar
+import com.ssoaharison.mypasswordmanager.commonUiElements.GeneralTopAppBar
 import com.ssoaharison.mypasswordmanager.data.ExternalCredential
 import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
 
@@ -45,7 +41,6 @@ fun SearchScreen(
     onDetailClicked: (ExternalCredential) -> Unit,
     onAddNewDetail: () -> Unit,
     onRefresh: () -> Unit,
-    onToSettings: () -> Unit,
 //    onUserMessageDisplayed: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
@@ -55,10 +50,9 @@ fun SearchScreen(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            DetailsTopAppBar(
+            GeneralTopAppBar(
                 R.string.search,
                 onRefresh,
-                onToSettings
             )
         },
         floatingActionButton = {

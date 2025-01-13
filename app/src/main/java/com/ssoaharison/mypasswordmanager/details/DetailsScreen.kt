@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,7 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssoaharison.mypasswordmanager.R
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsList
-import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsTopAppBar
+import com.ssoaharison.mypasswordmanager.commonUiElements.GeneralTopAppBar
 import com.ssoaharison.mypasswordmanager.data.ExternalCredential
 import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
 import com.ssoaharison.mypasswordmanager.util.DetailFilterModel
@@ -47,7 +46,6 @@ fun DetailsScreen(
     @StringRes userMessage: Int,
     onDetailClicked: (ExternalCredential) -> Unit,
     onAddNewDetail: () -> Unit,
-    onToSettings: () -> Unit,
     onRefresh: () -> Unit,
     onUserMessageDisplayed: () -> Unit,
     modifier: Modifier = Modifier,
@@ -58,10 +56,9 @@ fun DetailsScreen(
         modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            DetailsTopAppBar(
+            GeneralTopAppBar(
                 R.string.details,
-                onRefresh,
-                onToSettings
+                onRefresh
             )
         },
         floatingActionButton = {

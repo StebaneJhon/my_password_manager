@@ -2,7 +2,6 @@ package com.ssoaharison.mypasswordmanager.service
 
 import android.R
 import android.app.assist.AssistStructure
-import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.CancellationSignal
@@ -20,7 +19,6 @@ import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
 import com.ssoaharison.mypasswordmanager.data.DetailsRepository
-import com.ssoaharison.mypasswordmanager.data.ExternalCredential
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +40,7 @@ class MyAutofillService : AutofillService() {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
 
-        val parsedStructure: ParsedStructure? = parseStructure(structure, applicationContext)
+        val parsedStructure: ParsedStructure? = parseStructure(structure)
 
         if (parsedStructure == null) {
             callback.onFailure("Error")
@@ -90,9 +88,7 @@ class MyAutofillService : AutofillService() {
     override fun onSaveRequest(request: SaveRequest, callback: SaveCallback) {
         val context: List<FillContext> = request.fillContexts
         val structure: AssistStructure = context[context.size - 1].structure
-
-        val data = traverseStructure(structure, applicationContext)
-
+        val data = traverseStructure(structure)
         if (data != null) {
             createNewDetail(data.appName!!, "", data.username!!, data.password!!) {
                 callback.onSuccess()
@@ -104,46 +100,51 @@ class MyAutofillService : AutofillService() {
 
     }
 
-    fun traverseStructure(structure: AssistStructure, context: Context): FetchedData? {
+    private fun traverseStructure(structure: AssistStructure): FetchedData? {
         val fetchedData = FetchedData()
         val windowNodes: List<AssistStructure.WindowNode> =
             (0 until structure.windowNodeCount).map { structure.getWindowNodeAt(it) }
-
-        fetchedData.appName = getAppNameFromAssistStructure(structure, context)
-
+        fetchedData.appName = getAppNameFromAssistStructure(structure)
         windowNodes.forEach { windowNode ->
             val viewNode: AssistStructure.ViewNode? = windowNode.rootViewNode
             fetchData(viewNode, fetchedData)
         }
-
-        return if (fetchedData.username == null && fetchedData.password == null && fetchedData.appName == null) null else fetchedData
+        return if (fetchedData.username == null || fetchedData.password == null || fetchedData.appName == null) null else fetchedData
     }
 
     private fun fetchData(viewNode: AssistStructure.ViewNode?, fetchedData: FetchedData) {
         if (viewNode == null) return
-        viewNode.autofillHints?.let { hints ->
+        val hints: List<String> = getHints(viewNode)
+        if (hints.isNotEmpty()) {
             when {
                 hints.contains(View.AUTOFILL_HINT_USERNAME) -> {
                     fetchedData.username = viewNode.text.toString()
                 }
+
+                hints.contains(View.AUTOFILL_HINT_EMAIL_ADDRESS) -> {
+                    fetchedData.username = viewNode.text.toString()
+                }
+
+                hints.contains(View.AUTOFILL_HINT_NAME) -> {
+                    fetchedData.username = viewNode.text.toString()
+                }
+
                 hints.contains(View.AUTOFILL_HINT_PASSWORD) -> {
                     fetchedData.password = viewNode.text.toString()
                 }
             }
         }
-
-        val children: List<AssistStructure.ViewNode>? =
+        val children: List<AssistStructure.ViewNode> =
             (0 until viewNode.childCount).map { viewNode.getChildAt(it) }
-        children?.forEach { childNode ->
+        children.forEach { childNode ->
             fetchData(childNode, fetchedData)
         }
     }
 
-    fun getAppNameFromAssistStructure(assistStructure: AssistStructure, context: Context): String? {
+    private fun getAppNameFromAssistStructure(assistStructure: AssistStructure): String? {
         val componentName = assistStructure.activityComponent
         val packageName = componentName.packageName
-//        val packageManager: PackageManager = applicationContext.packageManager
-        val packageManager: PackageManager = context.packageManager
+        val packageManager: PackageManager = applicationContext.packageManager
         return try {
             val applicationInfo: ApplicationInfo = packageManager.getApplicationInfo(packageName, 0)
             packageManager.getApplicationLabel(applicationInfo).toString()
@@ -153,17 +154,17 @@ class MyAutofillService : AutofillService() {
         }
     }
 
-    fun parseStructure(structure: AssistStructure, context: Context): ParsedStructure? {
+    private fun parseStructure(structure: AssistStructure): ParsedStructure? {
         val parsedStructure = ParsedStructure()
         val windowNodes: List<AssistStructure.WindowNode> =
             (0 until structure.windowNodeCount).map { structure.getWindowNodeAt(it) }
-        val appName = getAppNameFromAssistStructure(structure, context)
+        val appName = getAppNameFromAssistStructure(structure)
         parsedStructure.appName = appName
         windowNodes.forEach { windowNode ->
             val viewNode: AssistStructure.ViewNode? = windowNode.rootViewNode
             traverseNode(viewNode, parsedStructure)
         }
-        return if (parsedStructure.usernameId == null && parsedStructure.passwordId == null && parsedStructure.appName == null) null else parsedStructure
+        return if (parsedStructure.usernameId == null || parsedStructure.passwordId == null || parsedStructure.appName == null) null else parsedStructure
     }
 
     private fun traverseNode(
@@ -171,15 +172,27 @@ class MyAutofillService : AutofillService() {
         parsedStructure: ParsedStructure
     ) {
         if (viewNode == null) return
-        viewNode.autofillHints?.let { hints ->
+        val hints: List<String> = getHints(viewNode)
+        if (hints.isNotEmpty()) {
             when {
-                hints.contains(View.AUTOFILL_HINT_USERNAME) -> parsedStructure.usernameId =
-                    viewNode.autofillId
+                hints.contains(View.AUTOFILL_HINT_USERNAME) -> {
+                    parsedStructure.usernameId = viewNode.autofillId
+                }
 
-                hints.contains(View.AUTOFILL_HINT_PASSWORD) -> parsedStructure.passwordId =
-                    viewNode.autofillId
+                hints.contains(View.AUTOFILL_HINT_EMAIL_ADDRESS) -> {
+                    parsedStructure.usernameId = viewNode.autofillId
+                }
+
+                hints.contains(View.AUTOFILL_HINT_NAME) -> {
+                    parsedStructure.usernameId = viewNode.autofillId
+                }
+
+                hints.contains(View.AUTOFILL_HINT_PASSWORD) -> {
+                    parsedStructure.passwordId = viewNode.autofillId
+                }
             }
         }
+
         val children: List<AssistStructure.ViewNode> =
             (0 until viewNode.childCount).map { viewNode.getChildAt(it) }
         children.forEach { childNode ->
@@ -187,7 +200,22 @@ class MyAutofillService : AutofillService() {
         }
     }
 
-    fun createNewDetail(
+    private fun getHints(viewNode: AssistStructure.ViewNode): List<String> {
+        val hints: List<String> = when {
+            viewNode.autofillHints?.isNotEmpty() == true -> {
+                viewNode.autofillHints!!.toList()
+            }
+            viewNode.hint?.isNotBlank() == true -> {
+                viewNode.hint!!.split(regex = Regex(pattern = "\\W"))
+            }
+            else -> {
+                emptyList<String>()
+            }
+        }
+        return hints
+    }
+
+    private fun createNewDetail(
         appName: String,
         link: String,
         username: String,
@@ -198,24 +226,13 @@ class MyAutofillService : AutofillService() {
         onDone()
     }
 
-    private fun searchUserData(appName: String, formatUserNata: (ExternalCredential?) -> Unit) {
+    private fun fetchUserData(structure: ParsedStructure, userData: (UserData?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            val data = repository.getCredentialByAppName(appName)
-            formatUserNata(data)
-        }
-    }
-
-    fun fetchUserData(structure: ParsedStructure, userData: (UserData?) -> Unit) {
-        searchUserData(structure.appName!!) { credential ->
-            if (credential == null) {
+            val data = repository.getCredentialByAppName(structure.appName!!)
+            if (data == null) {
                 userData(null)
             } else {
-                userData(
-                    UserData(
-                        credential.username,
-                        credential.password
-                    )
-                )
+                userData(UserData(data.username, data.password))
             }
         }
     }

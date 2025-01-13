@@ -1,11 +1,17 @@
 package com.ssoaharison.mypasswordmanager
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat.getString
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,11 +25,13 @@ import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.USER_
 import com.ssoaharison.mypasswordmanager.detailContent.DetailContentScreen
 import com.ssoaharison.mypasswordmanager.details.DetailsScreen
 import com.ssoaharison.mypasswordmanager.search.SearchScreen
+import com.ssoaharison.mypasswordmanager.settings.SettingsScreen
 import com.ssoaharison.mypasswordmanager.upsertDetail.UpsertDetailScreen
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun MyPasswordManagerNavGraph(
+    context: Context,
     navController: NavHostController = rememberNavController(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     startDestination: String = MyPasswordManagerDestinations.SEARCH_ROUTE,
@@ -52,8 +60,7 @@ fun MyPasswordManagerNavGraph(
                 onUserMessageDisplayed = {entry.arguments?.putInt(USER_MESSAGE_ARG, 0)},
                 onAddNewDetail = {navActions.navigateToUpsertDetail(R.string.add_new_detail, null)},
                 onDetailClicked = {detail -> navActions.navigateToDetailContent(detail.id)},
-                onToSettings = {}, // TODO: To be changed
-                onRefresh = {}, // TODO: To be changed
+                onRefresh = {navActions.navigateToSearch()}
             )
         }
         composable(
@@ -66,8 +73,15 @@ fun MyPasswordManagerNavGraph(
                 userMessage = entry.arguments?.getInt(USER_MESSAGE_ARG)!!,
                 onDetailClicked = {detail -> navActions.navigateToDetailContent(detail.id)},
                 onAddNewDetail = {navActions.navigateToUpsertDetail(R.string.add_new_detail, null)},
-                onRefresh = {},
-                onToSettings = {}
+                onRefresh = {navActions.navigateToSearch()}
+            )
+        }
+        composable(
+            MyPasswordManagerDestinations.SETTINGS_ROUTE,
+
+        ) {
+            SettingsScreen(
+                onRefresh = {navActions.navigateToSearch()}
             )
         }
         composable(
@@ -97,7 +111,12 @@ fun MyPasswordManagerNavGraph(
                     navActions.navigateToUpsertDetail(R.string.edit_detail, detailId)
                 },
                 onDeleteDetail = { navActions.navigateToDetails(DELETE_RESULT_OK) },
-                onBack = {navController.popBackStack()}
+                onBack = {navController.popBackStack()},
+                onCopyItemContent = {
+                    val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip: ClipData = ClipData.newPlainText(getString(context, it.title), it.content)
+                    clipboard.setPrimaryClip(clip)
+                }
             )
         }
     }

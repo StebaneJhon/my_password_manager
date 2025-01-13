@@ -1,5 +1,6 @@
 package com.ssoaharison.mypasswordmanager
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -51,13 +52,14 @@ class MainActivity : ComponentActivity() {
                 intent.setData(Uri.parse("package:com.ssoaharison.mypasswordmanager"))
                 requestAutofillServicePermission.launch(intent)
             }
-            MyPasswordManagerApp()
+
+            MyPasswordManagerApp(this)
         }
     }
 }
 
 @Composable
-fun MyPasswordManagerApp() {
+fun MyPasswordManagerApp(context: Context) {
     MyPasswordManagerTheme {
         val startDestination = MyPasswordManagerDestinations.SEARCH_ROUTE
         val navController = rememberNavController()
@@ -69,6 +71,7 @@ fun MyPasswordManagerApp() {
         Surface(color = MaterialTheme.colorScheme.background) {
             Column(modifier = Modifier.fillMaxSize()) {
                 MyPasswordManagerNavGraph(
+                    context = context,
                     navController = navController,
                     startDestination = startDestination,
                     navActions = navActions,
@@ -79,11 +82,14 @@ fun MyPasswordManagerApp() {
                     selectedItem = selectedItem
                 ) { index ->
                     selectedItem = index
-                    if (selectedItem == 0) navActions.navigateToSearch() else navActions.navigateToDetails()
+                    when (selectedItem) {
+                        0 -> navActions.navigateToSearch()
+                        1 -> navActions.navigateToDetails()
+                        2 -> navActions.navigateToSettings()
+                    }
                 }
             }
         }
-
     }
 }
 

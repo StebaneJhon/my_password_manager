@@ -23,21 +23,15 @@ import com.ssoaharison.mypasswordmanager.ui.theme.MyPasswordManagerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailsTopAppBar(
+fun GeneralTopAppBar(
     @StringRes title: Int,
     onIcon: () -> Unit,
-    onToSettings: () -> Unit
 ) {
     TopAppBar(
         title = { Text(text = stringResource(title)) },
         navigationIcon = {
             IconButton(onClick = onIcon) {
                 Icon(painter = painterResource(R.drawable.ic_box), contentDescription =  stringResource(R.string.app_icon))
-            }
-        },
-        actions = {
-            IconButton(onClick = onToSettings) {
-                Icon(painter = painterResource(R.drawable.ic_settings), contentDescription = stringResource(R.string.menu_to_settings))
             }
         },
         modifier = Modifier.fillMaxWidth()
@@ -69,7 +63,7 @@ fun DetailUpsertTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GenericTopAppBar(
+fun DetailContentTopAppBar(
     title: String,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
@@ -99,7 +93,7 @@ fun GenericTopAppBar(
 private fun DetailsTopAppBarPreview() {
     MyPasswordManagerTheme {
         Surface {
-            DetailsTopAppBar(R.string.search, {}) {}
+            GeneralTopAppBar(R.string.search) {}
         }
     }
 }
@@ -119,7 +113,7 @@ private fun DetailUpsertTopAppBarPreview() {
 private fun GenericTopAppBarTopAppBarPreview() {
     MyPasswordManagerTheme {
         Surface {
-            GenericTopAppBar(stringResource(R.string.detail_content, "Credential"), {}, {}) {}
+            DetailContentTopAppBar(stringResource(R.string.detail_content, "Credential"), {}, {}) {}
         }
     }
 }

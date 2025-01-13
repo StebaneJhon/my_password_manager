@@ -8,6 +8,7 @@
     <string name="credentials">Credentials</string>
     <string name="details_content">Details content</string>
     <string name="menu_to_settings">To settings</string>
+    <string name="settings">Settings</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
     <string name="add_new_detail">Add new detail</string>
@@ -29,4 +30,10 @@
     <string name="message_detail_added_successfully">Detail added.</string>
     <string name="message_detail_deleted_successfully">Detail deleted.</string>
     <string name="message_must_set_the_app_as_current_autofill_service">Set My password manager as the current autofill service for the app to fully function.</string>
+    <string name="label_name">App name</string>
+    <string name="label_user_name">User name</string>
+    <string name="label_password">Password</string>
+    <string name="label_link">Link</string>
+    <string name="copy">Copy %1$s</string>
+    <string name="label_screen_in_development">This screen is still in development</string>
 </resources>
