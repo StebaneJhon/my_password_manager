@@ -2,6 +2,7 @@ package com.ssoaharison.mypasswordmanager.data
 
 import com.ssoaharison.mypasswordmanager.data.source.DetailsDao
 import com.ssoaharison.mypasswordmanager.di.DefaultDispatcher
+import com.ssoaharison.mypasswordmanager.util.isPasswordWeak
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -20,6 +21,22 @@ class DefaultDetailsRepository @Inject constructor(
         return dataSource.observeAllCredentials().map { credentials ->
             withContext(dispatcher) {
                 credentials.toExternal()
+            }
+        }
+    }
+
+    override fun getCredentialsWithWeakPasswordStream(): Flow<List<ExternalCredential>> {
+        return dataSource.observeAllCredentials().map { credentials ->
+            withContext(dispatcher) {
+                credentials.filter { isPasswordWeak(it.password) }.toExternal()
+            }
+        }
+    }
+
+    override fun getCredentialsWithStrongPasswordStream(): Flow<List<ExternalCredential>> {
+        return dataSource.observeAllCredentials().map { credentials ->
+            withContext(dispatcher) {
+                credentials.filter { !isPasswordWeak(it.password) }.toExternal()
             }
         }
     }

@@ -8,7 +8,7 @@
     <string name="credentials">Credentials</string>
     <string name="details_content">Details content</string>
     <string name="menu_to_settings">To settings</string>
-    <string name="settings">Settings</string>
+    <string name="insight">Insight</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_delete">Delete</string>
     <string name="add_new_detail">Add new detail</string>
@@ -26,6 +26,9 @@
     <string name="error_detail_not_found">Detail not found.</string>
     <string name="error_loading_detail">Error while loading detail.</string>
     <string name="error_no_detail">No detail found.</string>
+    <string name="error_authentication_failed">Higher beings, this app is for you only.</string>
+    <string name="error_authentication_feature_unavailable">Authentication feature unavailable! This app is meant to store sensible data, therefore needs authentication methode.</string>
+    <string name="error_authentication_hardware_unavailable">Authentication hardware unavailable! This app is meant to store sensible data, therefore needs authentication methode.</string>
     <string name="message_detail_saved_successfully">Detail saved.</string>
     <string name="message_detail_added_successfully">Detail added.</string>
     <string name="message_detail_deleted_successfully">Detail deleted.</string>
@@ -38,4 +41,7 @@
     <string name="label_screen_in_development">This screen is still in development</string>
     <string name="label_title_biometric">Please identify yourself</string>
     <string name="label_description_biometric">Please identify yourself</string>
+    <string name="weak_passwords">Weak passwords</string>
+    <string name="strong_passwords">Strong passwords</string>
+    <string name="duplicated_passwords">Duplicated passwords</string>
 </resources>

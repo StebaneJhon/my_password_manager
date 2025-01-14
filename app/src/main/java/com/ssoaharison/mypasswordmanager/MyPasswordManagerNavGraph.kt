@@ -6,17 +6,14 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat.getString
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.DETAIL_ID_ARG
@@ -25,7 +22,7 @@ import com.ssoaharison.mypasswordmanager.MyPasswordManagerDestinationsArgs.USER_
 import com.ssoaharison.mypasswordmanager.detailContent.DetailContentScreen
 import com.ssoaharison.mypasswordmanager.details.DetailsScreen
 import com.ssoaharison.mypasswordmanager.search.SearchScreen
-import com.ssoaharison.mypasswordmanager.settings.SettingsScreen
+import com.ssoaharison.mypasswordmanager.insight.InsightScreen
 import com.ssoaharison.mypasswordmanager.upsertDetail.UpsertDetailScreen
 import kotlinx.coroutines.CoroutineScope
 
@@ -73,11 +70,12 @@ fun MyPasswordManagerNavGraph(
             )
         }
         composable(
-            MyPasswordManagerDestinations.SETTINGS_ROUTE,
+            MyPasswordManagerDestinations.INSIGHT_ROUTE,
 
         ) {
-            SettingsScreen(
-                onRefresh = {navActions.navigateToSearch()}
+            InsightScreen(
+                onRefresh = {navActions.navigateToSearch()},
+                onItemClicked = {detail -> navActions.navigateToDetailContent(detail.id)}
             )
         }
         composable(

@@ -72,6 +72,7 @@ class BiometricPromptManager(
         data object AuthenticationFailed: BiometricResult
         data object AuthenticationSuccess: BiometricResult
         data object AuthenticationNotSet: BiometricResult
+        data object NotAuthenticated: BiometricResult
     }
 
 }
