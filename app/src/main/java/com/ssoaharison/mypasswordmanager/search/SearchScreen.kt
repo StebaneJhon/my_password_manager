@@ -41,7 +41,6 @@ fun SearchScreen(
     onDetailClicked: (ExternalCredential) -> Unit,
     onAddNewDetail: () -> Unit,
     onRefresh: () -> Unit,
-//    onUserMessageDisplayed: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -80,6 +79,10 @@ fun SearchScreen(
                     title = stringResource(R.string.credentials,),
                     details = uiState.items,
                     onDetailClicked = onDetailClicked,
+                    Modifier.padding(
+                        vertical = dimensionResource(R.dimen.horizontal_margin),
+                        horizontal = dimensionResource(R.dimen.horizontal_margin),
+                    )
                 )
             } else {
                 Text(text = stringResource(uiState.userMessage ?: R.string.on_no_detail_found), style = MaterialTheme.typography.labelSmall)
@@ -103,7 +106,6 @@ fun MySearchBar(
     searchQuery: String,
     modifier: Modifier = Modifier
 ) {
-
     OutlinedTextField(
         value = searchQuery,
         leadingIcon = { Icon(imageVector = Icons.Default.Search, null) },

@@ -110,7 +110,7 @@ class DetailsViewModel @Inject constructor(
 
 const val DETAILS_FILTER_SAVED_STATE_KEY = "DETAILS_FILTER_SAVED_STATE_KEY"
 
-fun getDetailTypes() = listOf(CREDENTIALS, ADDRESS, BIRTHDAY)
+fun getDetailTypes() = listOf(CREDENTIALS)
 
 
 

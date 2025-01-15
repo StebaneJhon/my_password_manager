@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 data class DetailContentUiState(
     val detail: ExternalCredential? = null,
+    val isPasswordRevealed: Boolean = false,
     val isLoading: Boolean = false,
     val userMessage: Int? = null,
     val isDetailDeleted: Boolean = false
@@ -35,15 +36,17 @@ class DetailContentViewModel @Inject constructor(
     val detailId: String = savedStateHandle[MyPasswordManagerDestinationsArgs.DETAIL_ID_ARG]!!
 
     private val _userMessage: MutableStateFlow<Int?> = MutableStateFlow(null)
+    private val _isPasswordRevealed: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _isLoading = MutableStateFlow(false)
     private val _isDetailDeleted = MutableStateFlow(false)
     private val _detailAsync = detailsRepository.getCredentialStream(detailId)
         .map { handleDetail(it) }
         .catch { emit(Async.Error(R.string.error_loading_detail)) }
 
+
     val uiState: StateFlow<DetailContentUiState> = combine(
-        _userMessage, _isLoading, _isDetailDeleted, _detailAsync
-    ) { userMessage, isLoading, isDetailDeleted, detailAsync ->
+        _userMessage, _isLoading, _isDetailDeleted, _detailAsync, _isPasswordRevealed
+    ) { userMessage, isLoading, isDetailDeleted, detailAsync, isPasswordRevealed ->
         when (detailAsync) {
             Async.Loading -> {
                 DetailContentUiState(isLoading = true)
@@ -57,6 +60,7 @@ class DetailContentViewModel @Inject constructor(
             is Async.Success -> {
                 DetailContentUiState(
                     detail = detailAsync.data,
+                    isPasswordRevealed = isPasswordRevealed,
                     isLoading = isLoading,
                     userMessage = userMessage,
                     isDetailDeleted = isDetailDeleted
@@ -68,6 +72,10 @@ class DetailContentViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(),
         initialValue = DetailContentUiState(isLoading = true)
     )
+
+    fun onPasswordVisibilityChange() {
+        _isPasswordRevealed.value = !_isPasswordRevealed.value
+    }
 
     fun deleteDetail() = viewModelScope.launch {
         detailsRepository.deleteCredential(detailId)

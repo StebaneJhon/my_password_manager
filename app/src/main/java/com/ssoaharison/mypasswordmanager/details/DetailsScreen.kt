@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -34,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssoaharison.mypasswordmanager.R
+import com.ssoaharison.mypasswordmanager.commonUiElements.DetailItem
 import com.ssoaharison.mypasswordmanager.commonUiElements.DetailsList
 import com.ssoaharison.mypasswordmanager.commonUiElements.GeneralTopAppBar
 import com.ssoaharison.mypasswordmanager.data.ExternalCredential
@@ -70,19 +72,28 @@ fun DetailsScreen(
 
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-        Column(
-            modifier = Modifier.padding(paddingValues)
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(dimensionResource(R.dimen.content_padding))
         ) {
-            FilterChipItems(
-                R.string.filter,
-                uiState.filteringUiInfo,
-                { viewModel.setFiltering(it.type) }
-            )
-            DetailsList(
-                title = stringResource(R.string.credentials,),
-                details = uiState.items,
-                onDetailClicked = onDetailClicked,
-            )
+            item{
+                FilterChipItems(
+                    R.string.filter,
+                    uiState.filteringUiInfo,
+                    { viewModel.setFiltering(it.type) }
+                )
+            }
+            item {
+                Text(
+                    text = stringResource(R.string.credentials),
+                    modifier = Modifier.padding(top = dimensionResource(R.dimen.vertical_margin))
+                )
+            }
+            items(uiState.items) {detail ->
+                DetailItem(detail, onDetailClicked)
+            }
         }
 
         uiState.userMessage?.let { userMessage ->
@@ -114,7 +125,7 @@ fun FilterChipItems(
     Column(
         modifier
             .fillMaxWidth()
-            .padding(all = dimensionResource(R.dimen.horizontal_margin))
+            .padding(vertical = dimensionResource(R.dimen.horizontal_margin))
     ) {
         Text(stringResource(text))
         LazyRow (

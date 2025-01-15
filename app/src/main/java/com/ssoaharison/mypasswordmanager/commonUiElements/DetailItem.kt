@@ -34,16 +34,9 @@ fun DetailsList(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(id = R.dimen.horizontal_margin))
     ) {
-        Text(
-            text = title,
-            modifier = Modifier.padding(
-                horizontal = dimensionResource(id = R.dimen.item_padding),
-                vertical = dimensionResource(id = R.dimen.vertical_margin)
-            )
-        )
-        LazyColumn {
+        Text(text = title)
+        LazyColumn(userScrollEnabled = false) {
             items(details) { detail ->
                 DetailItem(
                     detail,

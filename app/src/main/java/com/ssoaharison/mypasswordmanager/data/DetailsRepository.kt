@@ -10,6 +10,8 @@ interface DetailsRepository {
 
     fun getCredentialsWithStrongPasswordStream(): Flow<List<ExternalCredential>>
 
+    fun getCredentialsWithDuplicatedPasswordStream(): Flow<List<ExternalCredential>>
+
     suspend fun getCredentials(): List<ExternalCredential>
 
     fun getCredentialStream(credentialId: String): Flow<ExternalCredential>

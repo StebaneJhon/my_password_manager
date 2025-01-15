@@ -1,6 +1,7 @@
 package com.ssoaharison.mypasswordmanager.data
 
 import com.ssoaharison.mypasswordmanager.data.source.DetailsDao
+import com.ssoaharison.mypasswordmanager.data.source.LocalCredential
 import com.ssoaharison.mypasswordmanager.di.DefaultDispatcher
 import com.ssoaharison.mypasswordmanager.util.isPasswordWeak
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,6 +38,25 @@ class DefaultDetailsRepository @Inject constructor(
         return dataSource.observeAllCredentials().map { credentials ->
             withContext(dispatcher) {
                 credentials.filter { !isPasswordWeak(it.password) }.toExternal()
+            }
+        }
+    }
+
+    override fun getCredentialsWithDuplicatedPasswordStream(): Flow<List<ExternalCredential>> {
+        return dataSource.observeAllCredentials().map { credentials ->
+            withContext(dispatcher) {
+                val result = arrayListOf<LocalCredential>()
+                for (index in 0..credentials.size.minus(1)) {
+                    val credentialWithSamePassword = credentials.filter { credentials[index].password == it.password }
+                    if (credentialWithSamePassword.size > 1) {
+                        credentialWithSamePassword.forEach {
+                            if (it !in result) {
+                                result.add(it)
+                            }
+                        }
+                    }
+                }
+                result.toExternal()
             }
         }
     }

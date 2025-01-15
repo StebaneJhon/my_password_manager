@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.ssoaharison.mypasswordmanager.R
 import com.ssoaharison.mypasswordmanager.data.DetailsRepository
 import com.ssoaharison.mypasswordmanager.data.ExternalCredential
-import com.ssoaharison.mypasswordmanager.details.DetailsUiState
 import com.ssoaharison.mypasswordmanager.util.Async
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,18 +39,22 @@ class InsightViewModel @Inject constructor(
     private val _strongPasswordsAsync = detailsRepository.getCredentialsWithStrongPasswordStream()
         .map { Async.Success(it) }
         .catch<Async<List<ExternalCredential>>> { emit(Async.Error(R.string.error_loading_detail)) }
+    private val _duplicatedPasswordsAsync = detailsRepository.getCredentialsWithDuplicatedPasswordStream()
+        .map { Async.Success(it) }
+        .catch<Async<List<ExternalCredential>>> { emit(Async.Error(R.string.error_loading_detail)) }
 
     val uiState: StateFlow<InsightUiState> = combine(
-        _isLoading, _userMessage, _strongPasswordsAsync, _weakPasswordsAsync
-    ) {isLoading, userMessage, weakPassword, strongPassword ->
-        if (weakPassword is Async.Loading || strongPassword is Async.Loading) {
+        _isLoading, _userMessage, _strongPasswordsAsync, _weakPasswordsAsync, _duplicatedPasswordsAsync
+    ) {isLoading, userMessage, weakPassword, strongPassword, duplicatedPassword ->
+        if (weakPassword is Async.Loading || strongPassword is Async.Loading || duplicatedPassword is Async.Loading) {
             InsightUiState(isLoading = true)
-        } else if (weakPassword is Async.Error || strongPassword is Async.Error) {
-            InsightUiState(userMessage = (strongPassword as Async.Error).errorMessage)
+        } else if (weakPassword is Async.Error || strongPassword is Async.Error || duplicatedPassword is Async.Error) {
+            InsightUiState(userMessage = (duplicatedPassword as Async.Error).errorMessage)
         } else {
             InsightUiState(
                 strongPasswords = (strongPassword as Async.Success).data,
                 weakPasswords = (weakPassword as Async.Success).data,
+                duplicatedPasswords = (duplicatedPassword as Async.Success).data,
                 isLoading = isLoading,
                 userMessage = userMessage
             )
