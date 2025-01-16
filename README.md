@@ -2,8 +2,8 @@
 **`Android application`**
 
 <img align="left" alt="Search screen." width="100px" src="asset/screenshot/search_screen.png" style="padding-right:10px;"/>
-<img align="left" alt="Insight screen." width="100px" src="asset/screenshot/insight_screen.png" style="padding-right:10px;"/>
 <img align="left" alt="Details screen." width="100px" src="asset/screenshot/details_screen.png" style="padding-right:10px;"/>
+<img align="left" alt="Insight screen." width="100px" src="asset/screenshot/insight_screen.png" style="padding-right:10px;"/>
 <img align="left" alt="New detai screen." width="100px" src="asset/screenshot/new_detail_screen.png" style="padding-right:10px;"/>
 <img align="left" alt="Detail content screen." width="100px" src="asset/screenshot/detail_content_screen.png" style="padding-right:10px;"/>
 <img alt="Saving request screen." width="100px" src="asset/screenshot/saving_data_request_screen.png" style="padding-right:10px;"/>
